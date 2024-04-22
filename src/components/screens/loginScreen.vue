@@ -1,64 +1,88 @@
 <template>
-  <div class="register-page">
-    <div class="page-left">
-      <h1 class="text">SIGN IN</h1>
-      <form class="mt-5" v-on:submit.prevent="handleSubmit">
-        <div class="form-group">
-          <label for="username">Username:</label>
-          <custom-input
-            v-model="username"
-            :id="'text'"
-            :type="'text'"
-            :class="'form-control'"
-            @input="clearError('username')"
-          />
-          <span
-            class="error-message"
-            v-if="errors.usernameError && !username"
-            >{{ errors.usernameError }}</span
-          >
-        </div>
-        <div class="form-group">
-          <label for="password">Password:</label>
-          <custom-input
-            v-model="password"
-            :id="'password'"
-            :type="'password'"
-            :class="'form-control'"
-            @input="clearError('password')"
-          />
-          <span
-            class="error-message"
-            v-if="errors.passwordError && !password"
-            >{{ errors.passwordError }}</span
-          >
-        </div>
-        <custom-button :value="'SIGN IN'" :type="'submit'" :color="'success'" />
-      </form>
-      <div class="or">or</div>
-      <router-link to="/register">
-        <div style="width: 150px">
-          <custom-button
-            :value="'SIGN UP'"
-            :type="'submit'"
-            :color="'primary'"
-            :style="'width: 150px; margin-left: 180%'"
-          />
-        </div>
-      </router-link>
+  <v-app>
+    <custom-alert
+      :alert-message="alertMessage"
+      :type="'success'"
+      :class="'alert'"
+      v-if="alertMessage === 'Đăng nhập thành công !'"
+    />
+    <custom-alert
+      :alert-message="alertMessage"
+      :type="'error'"
+      :class="'alert'"
+      v-if="alertMessage === 'Tên người dùng hoặc mật khẩu không đúng !'"
+    />
+    <div class="register-page">
+      <div class="page-left">
+        <v-container>
+          <h1 class="text">SIGN IN</h1>
+          <form class="mt-5" v-on:submit.prevent="handleSubmit">
+            <div class="form-group">
+              <label for="username">Username:</label>
+              <custom-input
+                v-model="username"
+                :id="'text'"
+                :type="'text'"
+                :class="'form-control'"
+                @input="clearError('username')"
+              />
+              <span
+                class="error-message"
+                v-if="errors.usernameError && !username"
+                >{{ errors.usernameError }}</span
+              >
+            </div>
+            <div class="form-group">
+              <label for="password">Password:</label>
+              <custom-input
+                v-model="password"
+                :id="'password'"
+                :type="'password'"
+                :class="'form-control'"
+                @input="clearError('password')"
+              />
+              <span
+                class="error-message"
+                v-if="errors.passwordError && !password"
+                >{{ errors.passwordError }}</span
+              >
+            </div>
+            <custom-button
+              :value="'SIGN IN'"
+              :type="'submit'"
+              :color="'success'"
+            />
+          </form>
+          <div class="or">or</div>
+          <router-link to="/register">
+            <div style="width: 150px">
+              <custom-button
+                :value="'SIGN UP'"
+                :type="'submit'"
+                :color="'primary'"
+                :style="'width: 150px; margin-left: 277%'"
+              />
+            </div>
+          </router-link>
+        </v-container>
+      </div>
     </div>
-  </div>
+  </v-app>
 </template>
 
 <script>
-import { ConfigApiUser } from "../API/configApiUser";
+import { ConfigApiMock } from "../API/ConfigApiMock";
 import customInput from "../comons/customInput.vue";
 import customButton from "../comons/customButton.vue";
+import customAlert from "../comons/customAlert.vue";
+
+import { mapActions } from "vuex";
 
 export default {
   components: {
     customInput,
     customButton,
+    customAlert,
   },
   data() {
     return {
@@ -68,9 +92,18 @@ export default {
         usernameError: "",
         passwordError: "",
       },
+      showAlert: false,
     };
   },
+  computed: {
+    alertMessage() {
+      return this.$store.state.alertMessage;
+    },
+  },
+
   methods: {
+
+    // Sự kiện submit form
     handleSubmit() {
       this.errors = {};
       if (!this.username) {
@@ -79,9 +112,8 @@ export default {
       if (!this.password) {
         this.errors.passwordError = "Vui lòng nhập mật khẩu";
       }
-
       if (Object.keys(this.errors).length === 0) {
-        ConfigApiUser.get("/user")
+        ConfigApiMock.get("/user")
           .then((res) => {
             const users = res.data;
             const userData = users.find((user) => {
@@ -91,11 +123,14 @@ export default {
               );
             });
             if (userData) {
-              alert("Đăng nhận thanh công");
+              this.$store.dispatch("showAlert", "Đăng nhập thành công !");
               localStorage.setItem("currentUser", JSON.stringify(userData));
               this.$router.push({ name: "HomePage" });
             } else {
-              alert("Tên người dùng hoặc mật khẩu không đúng");
+              this.$store.dispatch(
+                "showAlert",
+                "Tên người dùng hoặc mật khẩu không đúng !"
+              );
             }
           })
           .catch((error) => {
@@ -108,14 +143,11 @@ export default {
 </script>
 
 <style scoped>
-/* Trong phần style scoped */
-
-/* Thiết lập mặc định cho tất cả các phần tử */
 * {
   margin: 0;
-  /* padding: 0; */
   box-sizing: border-box;
 }
+
 .btn {
   width: 450px;
   margin-left: 100px;
@@ -124,7 +156,6 @@ export default {
   color: red;
   font-size: 14px;
 }
-/* Phần layout chính */
 .register-page {
   width: 100%;
   display: flex;

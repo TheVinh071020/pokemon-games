@@ -7,14 +7,18 @@
     @input="$emit('input', $event.target.value)"
   />
 </template>
-  
-  <script>
+
+<script>
 export default {
-  props: ["id", "value", "type", "className"],
+  props: ["id", "value", "type", "className", "custom-input"],
 };
 </script>
-  
-  <style scoped>
-/* Thiết lập cho các ô input */
+
+<style scoped>
+.custom-input {
+  border: 1px ridge #dbdbdb;
+  border-radius: 10px;
+  width: 180%;
+  height: 40px;
+}
 </style>
-  

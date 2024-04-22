@@ -1,43 +1,60 @@
 <template>
-  <div class="main-cart">
-    <div class="cart-page">
-      <comp-header />
-      <div class="main">
-        <div class="content">
-          <table class="cart-table">
-            <tr>
-              <th>Id</th>
-              <th>Image</th>
-              <th>Type</th>
-              <th>Name</th>
-              <th>Action</th>
-            </tr>
-            <tr
-              v-for="product in products"
-              :key="product.id"
-              v-on:click="clickDetail(product.id)"
-              class="cart-item"
-            >
-              <td>{{product.id}}</td>
-              <td>
-                <img class="img-pokemon" :src="product.imageUrl" alt="" />
-              </td>
-              <td>{{product.type}}</td>
-              <td>{{product.name}}</td>
-              <td class="btn-release">
-                <custom-button
-                  class="btn-release"
-                  :color="'info'"
-                  :value="'Attack'"
-                  :type="'button'"
-                />
-              </td>
-            </tr>
-          </table>
+  <v-app>
+    <v-container>
+      <div class="main-cart">
+        <div class="cart-page">
+          <comp-header />
+          <div class="main">
+            <div class="content">
+              <table class="cart-table">
+                <tr>
+                  <th>Id</th>
+                  <th>Image</th>
+                  <th>Type</th>
+                  <th>Name</th>
+                  <th>Action</th>
+                </tr>
+                <tr
+                  v-for="product in products"
+                  :key="product.id"
+                  class="cart-item"
+                >
+                  <td>{{ product.id }}</td>
+                  <td>
+                    <img
+                      v-on:click="clickDetail(product.id)"
+                      class="img-pokemon"
+                      :src="product.imageUrl"
+                      alt=""
+                    />
+                  </td>
+                  <td class="ability">
+                    <div class="ability-tab">
+                      <div
+                        v-for="(ability, index) in product.abilities"
+                        :key="index"
+                      >
+                        {{ ability.ability.name }} <br />
+                      </div>
+                    </div>
+                  </td>
+                  <td>{{ product.name }}</td>
+                  <td class="btn-release">
+                    <custom-button
+                      class="btn-release"
+                      :color="'info'"
+                      :value="'Attack'"
+                      :type="'button'"
+                    />
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
+    </v-container>
+  </v-app>
 </template>
 
 <script>
@@ -51,6 +68,7 @@ export default {
   props: {
     products: Array,
   },
+
   methods: {
     clickDetail(id) {
       this.$router.push({ name: "DetailPage", params: { id: id } });
@@ -64,7 +82,25 @@ export default {
   width: 100%;
   margin-bottom: 20px;
 }
+.ability {
+  width: 165px;
+}
 
+.ability .ability-tab {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.ability .ability-tab div {
+  border: 1px ridge #e6e4e4;
+  width: 140px;
+  height: 30px;
+  margin-top: 10px;
+  border-radius: 15px;
+  background-color: rgb(118, 207, 118);
+}
 .main-cart .cart-page .main {
   max-width: 1536px;
   padding-left: 24px;

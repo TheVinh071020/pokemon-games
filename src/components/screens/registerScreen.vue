@@ -1,80 +1,96 @@
 <template>
-  <div class="register-page">
-    <div class="page-left">
-      <h1 class="text">SIGN UP</h1>
-      <form class="mt-5" v-on:submit.prevent="handleSubmit">
-        <div class="form-group">
-          <label for="text">Username:</label>
-          <custom-input
-            v-model="username"
-            :id="'text'"
-            :type="'text'"
-            :class="'form-control'"
-            @input="clearError('username')"
-          />
-          <span
-            class="error-message"
-            v-if="errors.usernameError && !username"
-            >{{ errors.usernameError }}</span
-          >
-        </div>
-        <div class="form-group">
-          <label for="password">Password:</label>
-          <custom-input
-            v-model="password"
-            :id="'password'"
-            :type="'password'"
-            :class="'form-control'"
-            @input="clearError('password')"
-          />
-          <span
-            class="error-message"
-            v-if="errors.passwordError && !password"
-            >{{ errors.passwordError }}</span
-          >
-        </div>
-        <div class="form-group">
-          <label for="confirmpassword">Confirm Password:</label>
-          <custom-input
-            v-model="confirmPassword"
-            :id="'password'"
-            :type="'password'"
-            :class="'form-control'"
-            @input="clearError('confirmPassword')"
-          />
-          <span
-            class="error-message"
-            v-if="errors.confirmPasswordError && !confirmPassword"
-            >{{ errors.confirmPasswordError }}</span
-          >
-        </div>
-        <custom-button :value="'SIGN UP'" :type="'submit'" :color="'success'" />
-      </form>
+  <v-app>
+    <custom-alert
+      :alert-message="alertMessage"
+      :type="'error'"
+      :class="'alert'"
+      v-if="alertMessage"
+    />
+    <div class="register-page">
+      <div class="page-left">
+        <v-container>
+          <h1 class="text">SIGN UP</h1>
+          <form class="mt-5" v-on:submit.prevent="handleSubmit">
+            <div class="form-group">
+              <label for="text">Username:</label>
+              <custom-input
+                v-model="username"
+                :id="'text'"
+                :type="'text'"
+                :class="'form-control'"
+                @input="clearError('username')"
+              />
+              <span
+                class="error-message"
+                v-if="errors.usernameError && !username"
+                >{{ errors.usernameError }}</span
+              >
+            </div>
+            <div class="form-group">
+              <label for="password">Password:</label>
+              <custom-input
+                v-model="password"
+                :id="'password'"
+                :type="'password'"
+                :class="'form-control'"
+                @input="clearError('password')"
+              />
+              <span
+                class="error-message"
+                v-if="errors.passwordError && !password"
+                >{{ errors.passwordError }}</span
+              >
+            </div>
+            <div class="form-group">
+              <label for="confirmpassword">Confirm Password:</label>
+              <custom-input
+                v-model="confirmPassword"
+                :id="'confirmPassword'"
+                :type="'password'"
+                :class="'form-control'"
+                @input="clearError('confirmPassword')"
+              />
+              <span
+                class="error-message"
+                v-if="errors.confirmPasswordError && !confirmPassword"
+                >{{ errors.confirmPasswordError }}</span
+              >
+            </div>
+            <custom-button
+              :value="'SIGN UP'"
+              :type="'submit'"
+              :color="'success'"
+            />
+          </form>
 
-      <div class="or">or</div>
-      <router-link to="/login">
-        <div style="width: 150px">
-          <custom-button
-            :value="'SIGN IN'"
-            :type="'submit'"
-            :color="'primary'"
-            :style="'width: 150px; margin-left: 180%'"
-          />
-        </div>
-      </router-link>
+          <div class="or">or</div>
+          <router-link to="/login">
+            <div style="width: 150px">
+              <custom-button
+                :value="'SIGN IN'"
+                :type="'submit'"
+                :color="'primary'"
+                :style="'width: 150px; margin-left: 285%'"
+              />
+            </div>
+          </router-link>
+        </v-container>
+      </div>
     </div>
-  </div>
+  </v-app>
 </template>
 
 <script>
 import customInput from "../comons/customInput.vue";
-import { ConfigApiUser } from "../API/configApiUser";
+import { ConfigApiMock } from "../API/ConfigApiMock";
 import customButton from "../comons/customButton.vue";
+import customAlert from "../comons/customAlert.vue";
 
 export default {
   components: {
     customInput,
     customButton,
+    customAlert,
   },
   data() {
     return {
@@ -86,7 +102,13 @@ export default {
         passwordError: "",
         confirmPasswordError: "",
       },
+      showAlert: false,
     };
+  },
+  computed: {
+    alertMessage() {
+      return this.$store.state.alertMessage;
+    },
   },
   methods: {
     handleSubmit() {
@@ -100,19 +122,25 @@ export default {
       if (!this.confirmPassword) {
         this.errors.confirmPasswordError = "Vui lòng nhập xác nhận mật khẩu";
       }
+      if (this.password !== this.confirmPassword) {
+        this.errors.confirmPasswordError =
+          "Mật khẩu và xác nhận mật khẩu không khớp";
+      }
       if (Object.keys(this.errors).length === 0) {
-        ConfigApiUser.get("/user")
+        ConfigApiMock.get("/user")
           .then((res) => {
             const users = res.data;
             const existingUser = users.find(
               (user) => user.username === this.username
             );
             if (existingUser) {
-              alert(
+              console.log("bb");
+              this.$store.dispatch(
+                "showAlert",
                 "Tên người dùng đã tồn tại. Vui lòng chọn một tên người dùng khác."
               );
             } else {
-              ConfigApiUser.post("/user", {
+              ConfigApiMock.post("/user", {
                 username: this.username,
                 password: this.password,
                 confirmPassword: this.confirmPassword,
@@ -120,7 +148,8 @@ export default {
                   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrDAY_lyALmc62tPopzRzF9hNBFzbyqxzYB6nXC2IZ5w&s",
               })
                 .then((res) => {
-                  alert("Đăng ký thành công");
+                  console.log(res.data);
+                  this.$store.dispatch("showAlert", "Đăng ký thành công !");
                   this.$router.push({ name: "Login" });
                 })
                 .catch((error) => {
@@ -147,6 +176,17 @@ export default {
   box-sizing: border-box;
 }
 
+.alert {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  position: fixed;
+  top: 20px;
+  right: 50px;
+  z-index: 1000; /* Ensure the alert appears above other content */
+}
+
 .error-message {
   color: red;
   font-size: 14px;
@@ -157,6 +197,7 @@ export default {
   margin-top: 10px;
   font-size: 20px;
 }
+
 .register-page {
   width: 100%;
   display: flex;

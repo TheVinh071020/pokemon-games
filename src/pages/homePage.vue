@@ -1,19 +1,27 @@
 <template>
-  <div class="home">
-    <comp-header />
-    <div class="main">
-      <div class="content">
-        <!-- <grid-detail-screen-vue :products="products" /> -->
-        <table-detail-screen :products="products" />
-        <custom-pagination-vue
-          :pageIndex="pageIndex"
-          :page-length="pageLength"
-          :total-visible="7"
-          @page-changed="handlePageChanged"
-        />
+  <v-app>
+    <custom-alert
+      :alert-message="alertMessage"
+      :type="'success'"
+      :class="'alert'"
+      v-if="alertMessage"
+    />
+    <div class="home">
+      <comp-header />
+      <div class="main">
+        <div class="content">
+          <!-- <grid-detail-screen-vue :products="products" /> -->
+          <table-detail-screen :products="products" />
+          <custom-pagination-vue
+            :pageIndex="pageIndex"
+            :page-length="pageLength"
+            :total-visible="7"
+            @page-changed="handlePageChanged"
+          />
+        </div>
       </div>
     </div>
-  </div>
+  </v-app>
 </template>
 
 <script>
@@ -22,6 +30,7 @@ import customPaginationVue from "../components/comons/customPagination.vue";
 import GridDetailScreenVue from "../components/screens/gridDetailScreen.vue";
 import axios from "axios";
 import TableDetailScreen from "../components/screens/tableDetailScreen.vue";
+import CustomAlert from "../components/comons/customAlert.vue";
 
 export default {
   components: {
@@ -29,6 +38,7 @@ export default {
     customPaginationVue,
     GridDetailScreenVue,
     TableDetailScreen,
+    CustomAlert,
   },
   data() {
     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -43,28 +53,38 @@ export default {
   created() {
     this.renderProducts();
   },
+  computed: {
+    alertMessage() {
+      return this.$store.state.alertMessage;
+    },
+  },
   methods: {
-    renderProducts() {
+    async renderProducts() {
       const offset = (this.pageIndex - 1) * this.pageLength;
-      const listProducts = axios
+      await axios
         .get(
           `https://pokeapi.co/api/v2/pokemon?limit=${this.pageLength}&offset=${offset}`
         )
-        .then((response) => {
-          console.log(response.data.results[0].url);
-          this.products = response.data.results.map((pokemon, index) => ({
-            id: index + offset + 1,
-            name: pokemon.name,
-            abilities: pokemon.abilities,
-            imageUrl: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
-              index + offset + 1
-            }.png`,
-          }));
+        .then(async (response) => {
+          for (let pokemon of response.data.results) {
+            try {
+              const pokemonDetails = await axios.get(pokemon.url);
+              this.products.push({
+                id: pokemonDetails.data.id,
+                name: pokemonDetails.data.name,
+                abilities: pokemonDetails.data.abilities,
+                imageUrl: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonDetails.data.id}.png`,
+              });
+            } catch (error) {
+              console.error("Error fetching Pokemon details:", error);
+            }
+          }
+
           this.totalProducts = response.data.count;
           this.totalPages = Math.ceil(this.totalProducts / this.pageLength);
         })
         .catch((error) => {
-          console.log(error);
+          console.error("Error fetching Pokemon list:", error);
         });
     },
     clickDetail(id) {
