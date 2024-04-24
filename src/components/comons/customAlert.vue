@@ -5,9 +5,6 @@
     :color="color"
     :class="size"
     dismissible
-    dense
-    outlined
-    text
   >
     {{ alertMessage }}
   </v-alert>
@@ -40,6 +37,17 @@ export default {
   position: fixed;
   top: 150px;
   right: 150px;
+  z-index: 1000;
+}
+.releasePokemon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  padding: 10px;
+  position: fixed;
+  top: 30px;
+  right: 30px;
   z-index: 1000;
 }
 </style>

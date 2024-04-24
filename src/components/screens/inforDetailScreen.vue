@@ -106,10 +106,7 @@ export default {
   gap: 5rem;
 }
 
-img {
-  width: 400px;
-  object-fit: cover;
-}
+
 .type-pokemon {
   border-radius: 5px;
   border: 1px ridge rgb(245, 245, 245);

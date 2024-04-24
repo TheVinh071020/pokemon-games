@@ -81,16 +81,17 @@
 </template>
 
 <script>
-import customInput from "../comons/customInput.vue";
-import { ConfigApiMock } from "../API/ConfigApiMock";
-import customButton from "../comons/customButton.vue";
-import customAlert from "../comons/customAlert.vue";
+import CustomInput from "../comons/customInput.vue";
+import CustomButton from "../comons/customButton.vue";
+import CustomAlert from "../comons/customAlert.vue";
+
+import { ConfigApiMock } from "../api/configApiMock";
 
 export default {
   components: {
-    customInput,
-    customButton,
-    customAlert,
+    CustomInput,
+    CustomButton,
+    CustomAlert,
   },
   data() {
     return {
@@ -134,7 +135,6 @@ export default {
               (user) => user.username === this.username
             );
             if (existingUser) {
-              console.log("bb");
               this.$store.dispatch(
                 "showAlert",
                 "Tên người dùng đã tồn tại. Vui lòng chọn một tên người dùng khác."
@@ -148,7 +148,6 @@ export default {
                   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrDAY_lyALmc62tPopzRzF9hNBFzbyqxzYB6nXC2IZ5w&s",
               })
                 .then((res) => {
-                  console.log(res.data);
                   this.$store.dispatch("showAlert", "Đăng ký thành công !");
                   this.$router.push({ name: "Login" });
                 })

@@ -71,18 +71,16 @@
 </template>
 
 <script>
-import { ConfigApiMock } from "../API/ConfigApiMock";
-import customInput from "../comons/customInput.vue";
-import customButton from "../comons/customButton.vue";
-import customAlert from "../comons/customAlert.vue";
-
-import { mapActions } from "vuex";
+import { ConfigApiMock } from "../api/configApiMock";
+import CustomInput from "../comons/customInput.vue";
+import CustomButton from "../comons/customButton.vue";
+import CustomAlert from "../comons/customAlert.vue";
 
 export default {
   components: {
-    customInput,
-    customButton,
-    customAlert,
+    CustomInput,
+    CustomButton,
+    CustomAlert,
   },
   data() {
     return {

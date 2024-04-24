@@ -1,6 +1,6 @@
 <template>
-  <v-app
-    ><v-main>
+  <v-app>
+    <v-main>
       <custom-alert
         :alert-message="alertMessage"
         :type="'success'"
@@ -13,9 +13,14 @@
         :class="'catchPokemon'"
         v-if="alertMessage === 'Rất tiếc Pokemon đã thoát được !'"
       />
+      <custom-alert
+        :alert-message="alertMessage"
+        :type="'error'"
+        :class="'catchPokemon'"
+        v-if="alertMessage === 'Vui lòng nhập tên cho Pokemon để bắt !'"
+      />
       <div class="detail">
         <comp-header />
-
         <div class="detail-pages">
           <v-container>
             <div class="container">
@@ -49,7 +54,7 @@
         </div>
       </div>
       <!-- dialog -->
-      <v-dialog v-model="popupVisible" max-width="500px">
+      <v-dialog v-model="popupVisible" max-width="500px" persistent>
         <v-card>
           <v-card-title>
             <span class="headline">Hãy đổi tên Pokemon để bỏ vào túi</span>
@@ -72,7 +77,9 @@
           </v-card-text>
           <v-card-actions>
             <v-btn color="primary" text @click="closePopup">Hủy</v-btn>
-            <v-btn color="primary" text @click="attackPokemon">Xác nhận</v-btn>
+            <v-btn color="primary" text @click="comfirmCatchPokemon(pokemon.id)"
+              >Xác nhận</v-btn
+            >
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -85,13 +92,13 @@ import CompHeader from "../components/layouts/compHeader.vue";
 import CustomChart from "../components/comons/customChart.vue";
 import InforDetailScreenVue from "../components/screens/inforDetailScreen.vue";
 import CustomButton from "../components/comons/customButton.vue";
-import CustomDialogVue from "../components/comons/CustomDialog.vue";
+import CustomDialogVue from "../components/comons/customDialog.vue";
 
 import CustomAlert from "../components/comons/customAlert.vue";
 import CustomInput from "../components/comons/customInput.vue";
 
-import { ConfigApiPokemon } from "../components/API/configApiPokemon";
-import { ConfigApiMock } from "../components/API/ConfigApiMock";
+import { getPokemonWithUserIdAxios } from "../components/axios/getPokemonWithUserIdAxios";
+import { getDetailPokemonAxios } from "../components/axios/getDetailPokemonAxios";
 
 export default {
   name: "DetailPage",
@@ -126,81 +133,54 @@ export default {
   methods: {
     closePopup() {
       this.popupVisible = false;
+      this.$store.dispatch("showAlert", "Rất tiếc Pokemon đã thoát được !");
     },
-    fetchPokemonDetails() {
-      const pokemonId = this.$route.params.id;
-      ConfigApiPokemon.get(`/${pokemonId}`)
-        .then((response) => {
-          this.pokemon = {
-            id: response.data.id,
-            name: response.data.name,
-            imageUrl: response.data.sprites.front_default,
-            height: response.data.height,
-            weight: response.data.weight,
-            abilities: response.data.abilities.map((ability) => ({
-              ability: {
-                name: ability.ability.name,
-              },
-              is_hidden: ability.is_hidden,
-            })),
-            types: response.data.types.map((type) => ({
-              type: {
-                name: type.type.name,
-                url: type.type.url,
-              },
-            })),
-          };
-          this.chartData = response.data.stats.map((stat) => ({
-            base_stat: stat.base_stat,
-            name: stat.stat.name,
-            url: stat.stat.url,
-          }));
-        })
-        .catch((error) => {
-          console.error("Error fetching Pokemon details:", error);
-        });
+    async fetchPokemonDetails() {
+      try {
+        const pokemonId = this.$route.params.id;
+        const response = await getDetailPokemonAxios(pokemonId);
+        this.pokemon = response.pokemon;
+        this.chartData = response.chartData;
+      } catch (error) {
+        console.error("Fetching Pokemon details failed", error);
+      }
     },
 
-    // Sự kiện bắt pokemon
+    // Sự kiện open dialog để bắt pokemon
     async catchPokemon(id) {
       try {
         const isCatchSuccessful = Math.random() < 0.5;
-        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
         if (isCatchSuccessful) {
           this.popupVisible = true;
-          const response = await ConfigApiPokemon.get(`/${id}`);
-          this.cart = {
-            id: response.data.id,
-            name: response.data.name,
-            imageUrl: response.data.sprites.front_default,
-            height: response.data.height,
-            weight: response.data.weight,
-            abilities: response.data.abilities.map((ability) => ({
-              ability: {
-                name: ability.ability.name,
-              },
-              is_hidden: ability.is_hidden,
-            })),
-            types: response.data.types.map((type) => ({
-              type: {
-                name: type.type.name,
-                url: type.type.url,
-              },
-            })),
-          };
-          const dataCart = {
-            user_id: currentUser.id,
-            myBag: [this.cart],
-            createAt: new Date().toLocaleString(),
-            status: 0,
-          };
-          const result = await ConfigApiMock.post("/cart", dataCart);
           this.$store.dispatch("showAlert", "Bạn đã bắt thành công !");
         } else {
           this.$store.dispatch("showAlert", "Rất tiếc Pokemon đã thoát được !");
         }
       } catch (error) {
         console.error("Error fetching Pokemon details:", error);
+      }
+    },
+
+    // Sự kiện xác nhận bắt pokemon
+    async comfirmCatchPokemon() {
+      const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+      if (this.username) {
+        try {
+          const result = await getPokemonWithUserIdAxios(
+            this.pokemon.id,
+            currentUser,
+            this.username
+          );
+          this.$store.dispatch("showAlert", "Bạn đã bắt thành công !");
+          this.popupVisible = false;
+        } catch (error) {
+          this.$store.dispatch("showAlert", "Đã xảy ra lỗi khi bắt Pokemon !");
+        }
+      } else {
+        this.$store.dispatch(
+          "showAlert",
+          "Vui lòng nhập tên cho Pokemon để bắt !"
+        );
       }
     },
   },
@@ -220,6 +200,7 @@ export default {
 .img {
   display: flex;
   flex-direction: column;
+  width: 270px;
 }
 
 .label {

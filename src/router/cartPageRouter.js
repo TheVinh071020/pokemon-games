@@ -1,6 +1,6 @@
 import CartPage from "../pages/cartPage.vue";
 
-export const CartPageRouter = [
+export const cartPageRouter = [
   {
     path: "/cart",
     name: "CartPage",

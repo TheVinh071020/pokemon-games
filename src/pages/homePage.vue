@@ -9,13 +9,31 @@
     <div class="home">
       <comp-header />
       <div class="main">
+        <div class="tab-container">
+          <v-tabs>
+            <v-tab @click="handleChangeTabList"
+              ><i class="fa-solid fa-list"></i
+            ></v-tab>
+            <v-tab @click="handleChangeTab"
+              ><i class="fa-solid fa-table-list"></i
+            ></v-tab>
+          </v-tabs>
+        </div>
         <div class="content">
-          <!-- <grid-detail-screen-vue :products="products" /> -->
-          <table-detail-screen :products="products" />
-          <custom-pagination-vue
+          <template v-if="changeTab === 0">
+            <grid-detail-screen :listPokemon="listPokemon" />
+          </template>
+          <template v-else>
+            <table-detail-screen :listPokemon="listPokemon" />
+          </template>
+          <div class="icon-loading" v-if="isloading">
+            <i class="fa-solid fa-spinner fa-spin-pulse fa-2xl"></i>
+          </div>
+          <custom-pagination
             :pageIndex="pageIndex"
             :page-length="pageLength"
             :total-visible="7"
+            style="margin: 45px"
             @page-changed="handlePageChanged"
           />
         </div>
@@ -26,32 +44,36 @@
 
 <script>
 import CompHeader from "../components/layouts/compHeader.vue";
-import customPaginationVue from "../components/comons/customPagination.vue";
-import GridDetailScreenVue from "../components/screens/gridDetailScreen.vue";
-import axios from "axios";
+import CustomPagination from "../components/comons/customPagination.vue";
+import GridDetailScreen from "../components/screens/gridDetailScreen.vue";
 import TableDetailScreen from "../components/screens/tableDetailScreen.vue";
 import CustomAlert from "../components/comons/customAlert.vue";
+import CustomButton from "../components/comons/customButton.vue";
+import { getListPokemonAxios } from "../components/Axios/getListPokemonAxios";
 
 export default {
+  name: "HomePage",
   components: {
     CompHeader,
-    customPaginationVue,
-    GridDetailScreenVue,
+    CustomPagination,
+    GridDetailScreen,
     TableDetailScreen,
     CustomAlert,
+    CustomButton,
   },
   data() {
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
     return {
-      products: [],
+      listPokemon: [],
       pageIndex: 1,
       pageLength: 12,
       totalProducts: 0,
       totalPages: 0,
+      changeTab: 1,
+      isloading : true
     };
   },
   created() {
-    this.renderProducts();
+    this.GetListPokemon();
   },
   computed: {
     alertMessage() {
@@ -59,41 +81,30 @@ export default {
     },
   },
   methods: {
-    async renderProducts() {
-      const offset = (this.pageIndex - 1) * this.pageLength;
-      await axios
-        .get(
-          `https://pokeapi.co/api/v2/pokemon?limit=${this.pageLength}&offset=${offset}`
-        )
-        .then(async (response) => {
-          for (let pokemon of response.data.results) {
-            try {
-              const pokemonDetails = await axios.get(pokemon.url);
-              this.products.push({
-                id: pokemonDetails.data.id,
-                name: pokemonDetails.data.name,
-                abilities: pokemonDetails.data.abilities,
-                imageUrl: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonDetails.data.id}.png`,
-              });
-            } catch (error) {
-              console.error("Error fetching Pokemon details:", error);
-            }
-          }
-
-          this.totalProducts = response.data.count;
-          this.totalPages = Math.ceil(this.totalProducts / this.pageLength);
-        })
-        .catch((error) => {
-          console.error("Error fetching Pokemon list:", error);
-        });
+    async GetListPokemon() {
+      try {
+        this.isloading = false;
+        const offset = (this.pageIndex - 1) * this.pageLength;
+        const response = await getListPokemonAxios(offset, this.pageLength);
+        this.listPokemon = response.listPokemon;
+        this.totalProducts = response.totalProducts;
+        this.totalPages = response.totalPages;
+      } catch (error) {
+        console.error("Fetching Pokemon list failed", error);
+      }
     },
     clickDetail(id) {
       this.$router.push({ name: "DetailPage", params: { id: id } });
     },
     handlePageChanged(newPageIndex) {
       this.pageIndex = newPageIndex;
-      console.log(newPageIndex);
-      this.renderProducts();
+      this.GetListPokemon();
+    },
+    handleChangeTabList() {
+      this.changeTab = 0;
+    },
+    handleChangeTab() {
+      this.changeTab = 1;
     },
   },
 };
@@ -101,6 +112,7 @@ export default {
 <style scoped>
 .home {
   width: 100%;
+  height: auto;
 }
 .main {
   position: relative;
@@ -112,12 +124,18 @@ export default {
   max-width: 1536px;
   padding-left: 24px;
   padding-right: 24px;
-  margin-top: 20px;
+  margin-top: 50px;
   width: 100%;
 }
-.paginate {
-  display: flex;
-  justify-content: center;
+
+.icon-loading {
+  position: absolute;
+  left: 49%;
+  bottom: 16%;
+}
+.tab-container {
+  position: absolute;
+  right: 10%;
 }
 .product-list {
   display: flex;

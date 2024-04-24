@@ -1,7 +1,7 @@
 <template>
   <div class="product-list">
     <div
-      v-for="product in products"
+      v-for="product in listPokemon"
       :key="product.id"
       v-on:click="clickDetail(product.id)"
       class="product"
@@ -18,10 +18,13 @@
 </template>
 
 <script>
+
 export default {
   name: "GridDetailScreen",
+  components: {
+  },
   props: {
-    products: Array,
+    listPokemon: Array,
   },
   methods: {
     clickDetail(id) {

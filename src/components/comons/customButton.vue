@@ -1,5 +1,11 @@
 <template>
-  <v-btn :style="style" :color="color" :type="type" :class="size">
+  <v-btn
+    :style="style"
+    :color="color"
+    :type="type"
+    :class="size"
+    @click="handleClick"
+  >
     {{ value }}
   </v-btn>
 </template>
@@ -7,6 +13,11 @@
 <script>
 export default {
   props: ["value", "type", "color", "style", "size"],
+  methods: {
+    handleClick() {
+      this.$emit("custom-click");
+    },
+  },
 };
 </script>
 
