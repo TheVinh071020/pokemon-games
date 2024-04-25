@@ -7,7 +7,7 @@
           :type="'success'"
           :class="'attackAlert'"
           v-if="alertMessage === 'Congratulations on your Pokemon winning!'"
-        /> 
+        />
         <custom-alert
           :alert-message="alertMessage"
           :type="'error'"
@@ -179,23 +179,12 @@ export default {
       ////////////////////////
       // Người tấn công
       const attacker = this.myBag.find((pokemon) => pokemon.cartId === id);
-<<<<<<< HEAD
-      // Tộc hệ
-      const attackType = attacker.types[0].type.name;
-      // Chỉ số tấn công
-      let attackerAttackStat = attacker.stats.find(
-=======
-      const defender = this.listPokemon.find(
-        (pokemon) => pokemon.id === this.selectedPokemonId
-      );
-
-      // Tính toán sức mạnh tấn công và phòng thủ của cả hai Pokémon
       // Tấn công
-      const attackType = attacker.types[0].type.name;
       const attackerAttackStat = attacker.stats.find(
->>>>>>> 4af43f20921a45849af50080829d2da4d6107e50
         (stat) => stat.name === "attack"
       ).base_stat;
+      // Tộc hệ
+      const attackType = attacker.types[0].type.name;
       // Chỉ số HP
       const attackerHpStat = attacker.stats.find(
         (stat) => stat.name === "hp"
@@ -213,8 +202,6 @@ export default {
       // Tộc hệ
       const defenderType = defender.types[0].type.name;
       // Chỉ số tấn công
-      console.log(attackerAttackStat);
-      // Phòng thủ
       const defenderAttackStat = defender.stats.find(
         (stat) => stat.stat.name === "attack"
       ).base_stat;
@@ -227,7 +214,6 @@ export default {
         (stat) => stat.stat.name === "defense"
       ).base_stat;
 
-<<<<<<< HEAD
       const heSoDamage = DOI_DAU[attackType][defenderType];
       const finalDamage = attackerAttackStat * heSoDamage;
       const result = finalDamage - (defenderHpStat + defenderDefenseStat);
@@ -235,26 +221,24 @@ export default {
         this.$store.dispatch(
           "showAlert",
           "Congratulations on your Pokemon winning!"
-        ); 
+        );
       } else {
         this.$store.dispatch(
           "showAlert",
           "Sorry your Pokemon has been losing !"
         );
-=======
-      console.log(defenderAttackStat);
 
-      const heSoDamage = DOI_DAU[attackType][defenderType];
-      console.log("heSoDamage ", heSoDamage);
-      const finalDamage = attackerAttackStat * heSoDamage;
-      console.log("finalDamage ", finalDamage);
-      const result = finalDamage - (defenderHpStat + defenderDefenseStat);
-      console.log("result ", result);
-      if (result >= 0) {
-        console.log("win");
-      } else {
-        console.log("lose");
->>>>>>> 4af43f20921a45849af50080829d2da4d6107e50
+        const heSoDamage = DOI_DAU[attackType][defenderType];
+        console.log("heSoDamage ", heSoDamage);
+        const finalDamage = attackerAttackStat * heSoDamage;
+        console.log("finalDamage ", finalDamage);
+        const result = finalDamage - (defenderHpStat + defenderDefenseStat);
+        console.log("result ", result);
+        if (result >= 0) {
+          console.log("win");
+        } else {
+          console.log("lose");
+        }
       }
     },
 
