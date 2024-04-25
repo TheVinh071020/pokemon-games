@@ -7,12 +7,13 @@
 </template>
 
 <script>
-import HomePage from "./pages/homePage.vue";
-import Register from "./components/screens/registerScreen.vue";
-import Login from "./components/screens/loginScreen.vue";
-import DetailPage from "./pages/detailPage.vue";
+import HomePage from "./views/homePage.vue";
+import RegisterScrreen from "./components/screens/registerScreen.vue";
+import LoginScrreen from "./components/screens/loginScreen.vue";
+import DetailPage from "./views/detailPage.vue";
+import CartPage from "./views/cartPage.vue";
 
-import CartPage from "./pages/cartPage.vue";
+
 export default {
   name: "App",
   data() {
@@ -20,8 +21,8 @@ export default {
   },
   components: {
     HomePage,
-    Register,
-    Login,
+    RegisterScrreen,
+    LoginScrreen,
     DetailPage,
     CartPage,
   },

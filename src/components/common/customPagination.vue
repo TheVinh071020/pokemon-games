@@ -4,12 +4,14 @@
       v-model="pageIndex"
       :length="pageLength"
       :total-visible="totalVisible"
+      prev-icon="mdi-menu-left"
+      next-icon="mdi-menu-right"
       @input="handlePageChange"
     ></v-pagination>
   </div>
 </template>
-  
-  <script>
+
+<script>
 export default {
   props: {
     pageIndex: {
@@ -32,8 +34,7 @@ export default {
   },
 };
 </script>
-  
-  <style scoped>
+
+<style>
 /* Thiết lập cho các ô input */
 </style>
-  

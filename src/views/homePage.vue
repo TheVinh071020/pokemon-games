@@ -1,14 +1,14 @@
 <template>
   <v-app>
-    <custom-alert
-      :alert-message="alertMessage"
-      :type="'success'"
-      :class="'alert'"
-      v-if="alertMessage"
-    />
     <div class="home">
       <comp-header />
       <div class="main">
+        <custom-alert
+          :alert-message="alertMessage"
+          :type="'success'"
+          :class="'alert'"
+          v-if="alertMessage === 'Logged in successfully !'"
+        />
         <div class="tab-container">
           <v-tabs>
             <v-tab @click="handleChangeTabList"
@@ -49,7 +49,7 @@ import GridDetailScreen from "../components/screens/gridDetailScreen.vue";
 import TableDetailScreen from "../components/screens/tableDetailScreen.vue";
 import CustomAlert from "../components/comons/customAlert.vue";
 import CustomButton from "../components/comons/customButton.vue";
-import { getListPokemonAxios } from "../components/Axios/getListPokemonAxios";
+import { getListPokemonAxios } from "../axios/getListPokemonAxios";
 
 export default {
   name: "HomePage",
@@ -68,8 +68,8 @@ export default {
       pageLength: 12,
       totalProducts: 0,
       totalPages: 0,
-      changeTab: 1,
-      isloading : true
+      changeTab: 0,
+      isloading: true,
     };
   },
   created() {
@@ -83,12 +83,12 @@ export default {
   methods: {
     async GetListPokemon() {
       try {
-        this.isloading = false;
         const offset = (this.pageIndex - 1) * this.pageLength;
         const response = await getListPokemonAxios(offset, this.pageLength);
         this.listPokemon = response.listPokemon;
         this.totalProducts = response.totalProducts;
         this.totalPages = response.totalPages;
+        this.isloading = false;
       } catch (error) {
         console.error("Fetching Pokemon list failed", error);
       }
@@ -97,8 +97,11 @@ export default {
       this.$router.push({ name: "DetailPage", params: { id: id } });
     },
     handlePageChanged(newPageIndex) {
-      this.pageIndex = newPageIndex;
-      this.GetListPokemon();
+      setTimeout(async () => {
+        this.pageIndex = newPageIndex;
+        this.GetListPokemon();
+      }, 300);
+      this.isloading = true; // Set loading state to true
     },
     handleChangeTabList() {
       this.changeTab = 0;

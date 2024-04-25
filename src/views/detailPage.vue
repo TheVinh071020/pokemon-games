@@ -5,25 +5,28 @@
         :alert-message="alertMessage"
         :type="'success'"
         :class="'catchPokemon'"
-        v-if="alertMessage === 'Bạn đã bắt thành công !'"
+        v-if="alertMessage === 'Successfully caught Pokemon !'"
       />
       <custom-alert
         :alert-message="alertMessage"
         :type="'error'"
         :class="'catchPokemon'"
-        v-if="alertMessage === 'Rất tiếc Pokemon đã thoát được !'"
+        v-if="alertMessage === 'Sorry, the Pokemon escaped!'"
       />
       <custom-alert
         :alert-message="alertMessage"
         :type="'error'"
         :class="'catchPokemon'"
-        v-if="alertMessage === 'Vui lòng nhập tên cho Pokemon để bắt !'"
+        v-if="alertMessage === 'Please enter a name for the Pokemon to catch !'"
       />
       <div class="detail">
         <comp-header />
         <div class="detail-pages">
           <v-container>
             <div class="container">
+              <div class="icon-loading1" v-if="isloading">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-2xl"></i>
+              </div>
               <div class="label">
                 <h2>{{ pokemon.name }}</h2>
                 <p>#{{ pokemon.id }}</p>
@@ -33,7 +36,7 @@
                   <img :src="pokemon.imageUrl" alt="" />
                   <div @click="catchPokemon(pokemon.id)" class="btn-catch">
                     <custom-button
-                      value="Bắt"
+                      value="Catch"
                       type="button"
                       color="info"
                       size="medium"
@@ -57,7 +60,7 @@
       <v-dialog v-model="popupVisible" max-width="500px" persistent>
         <v-card>
           <v-card-title>
-            <span class="headline">Hãy đổi tên Pokemon để bỏ vào túi</span>
+            <span class="headline">Change the name to put in your bag</span>
           </v-card-title>
           <v-card-text>
             <v-form ref="form">
@@ -76,10 +79,17 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" text @click="closePopup">Hủy</v-btn>
-            <v-btn color="primary" text @click="comfirmCatchPokemon(pokemon.id)"
-              >Xác nhận</v-btn
+            <v-btn color="primary" text @click="closePopup">Cancel</v-btn>
+            <v-btn
+              color="primary"
+              text
+              @click="comfirmCatchPokemon(pokemon.id)"
             >
+              Confirm
+            </v-btn>
+            <div class="icon-loading" v-if="isloading">
+              <i class="fa-solid fa-spinner fa-spin-pulse fa-2xl"></i>
+            </div>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -97,8 +107,8 @@ import CustomDialogVue from "../components/comons/customDialog.vue";
 import CustomAlert from "../components/comons/customAlert.vue";
 import CustomInput from "../components/comons/customInput.vue";
 
-import { getPokemonWithUserIdAxios } from "../components/axios/getPokemonWithUserIdAxios";
-import { getDetailPokemonAxios } from "../components/axios/getDetailPokemonAxios";
+import { getPokemonWithUserIdAxios } from "../axios/getPokemonWithUserIdAxios";
+import { getDetailPokemonAxios } from "../axios/getDetailPokemonAxios";
 
 export default {
   name: "DetailPage",
@@ -120,6 +130,7 @@ export default {
       dialogVisible: false,
       showAlert: false,
       popupVisible: false,
+      isloading: false,
     };
   },
   created() {
@@ -129,11 +140,17 @@ export default {
     alertMessage() {
       return this.$store.state.alertMessage;
     },
+    cartItems() {
+      return this.$store.getters.getCartItems;
+    },
+  },
+  mounted() {
+    console.log(this.cartItems); // In ra nội dung của state.cart
   },
   methods: {
     closePopup() {
       this.popupVisible = false;
-      this.$store.dispatch("showAlert", "Rất tiếc Pokemon đã thoát được !");
+      this.$store.dispatch("showAlert", "Sorry, the Pokemon escaped!");
     },
     async fetchPokemonDetails() {
       try {
@@ -148,38 +165,50 @@ export default {
 
     // Sự kiện open dialog để bắt pokemon
     async catchPokemon(id) {
-      try {
-        const isCatchSuccessful = Math.random() < 0.5;
-        if (isCatchSuccessful) {
-          this.popupVisible = true;
-          this.$store.dispatch("showAlert", "Bạn đã bắt thành công !");
-        } else {
-          this.$store.dispatch("showAlert", "Rất tiếc Pokemon đã thoát được !");
-        }
-      } catch (error) {
-        console.error("Error fetching Pokemon details:", error);
+      this.isloading = true;
+      if (!id) {
+        this.$store.dispatch("showAlert", "Please log in to play the game!");
+        return;
       }
+      setTimeout(async () => {
+        try {
+          const isCatchSuccessful = Math.random() < 0.5;
+          if (isCatchSuccessful) {
+            this.popupVisible = true;
+            this.$store.dispatch("showAlert", "Successfully caught Pokemon !");
+            this.isloading = false;
+          } else {
+            this.$store.dispatch("showAlert", "Sorry, the Pokemon escaped!");
+            this.isloading = false;
+          }
+        } catch (error) {
+          console.error("Error fetching Pokemon details:", error);
+        }
+      }, 1000);
     },
 
     // Sự kiện xác nhận bắt pokemon
     async comfirmCatchPokemon() {
       const currentUser = JSON.parse(localStorage.getItem("currentUser"));
       if (this.username) {
-        try {
-          const result = await getPokemonWithUserIdAxios(
-            this.pokemon.id,
-            currentUser,
-            this.username
-          );
-          this.$store.dispatch("showAlert", "Bạn đã bắt thành công !");
-          this.popupVisible = false;
-        } catch (error) {
-          this.$store.dispatch("showAlert", "Đã xảy ra lỗi khi bắt Pokemon !");
-        }
+        this.isloading = true;
+        setTimeout(async () => {
+          try {
+            const result = await getPokemonWithUserIdAxios(
+              this.pokemon.id,
+              currentUser,
+              this.username
+            );
+            this.$store.dispatch("showAlert", "Successfully caught Pokemon !");
+            this.popupVisible = false;
+          } catch (error) {
+            console.log(error);
+          }
+        }, 500);
       } else {
         this.$store.dispatch(
           "showAlert",
-          "Vui lòng nhập tên cho Pokemon để bắt !"
+          "Please enter a name for the Pokemon to catch !"
         );
       }
     },
@@ -188,6 +217,15 @@ export default {
 </script>
 
 <style scoped>
+.icon-loading {
+  margin-bottom: 10px;
+  margin-left: 10px;
+}
+.icon-loading1 {
+  position: absolute;
+  left: 49%;
+  top: 45%;
+}
 .detail {
   width: 100%;
 }

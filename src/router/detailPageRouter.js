@@ -1,4 +1,4 @@
-import DetailPage from "../pages/detailPage";
+import DetailPage from "../views/detailPage";
 
 export const detailPageRouter = [
   {

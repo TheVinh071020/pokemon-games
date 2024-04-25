@@ -5,20 +5,13 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    listPokemon: [],
     cart: [],
     alertMessage: "",
   },
   mutations: {
-    getAllPokemon(state, listPokemon) {
-      state.listPokemon = listPokemon;
-    },
     addToCart(state, pokemon) {
       state.cart.push(pokemon);
-    },
-
-    setCart(state, cartData) {
-      state.cart = cartData;
+      console.log(state.cart);
     },
 
     setAlertMessage(state, message) {
@@ -31,11 +24,9 @@ export default new Vuex.Store({
     },
 
     async catch({ commit }, catchedPokemon) {
-      commit("addToCart", catchedPokemon);
-    },
+      console.log(this.$store.state.cart);
 
-    setCart({ commit }, cartData) {
-      commit("setCart", cartData);
+      commit("addToCart", catchedPokemon);
     },
 
     // Hành động show alert

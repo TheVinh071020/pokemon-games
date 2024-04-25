@@ -12,20 +12,20 @@
 
 <script>
 export default {
-  props: ["alertMessage", "type", "color", "size", "catchPokemon"],
+  props: ["alertMessage", "type", "color", "size"],
 };
 </script>
 
 <style scoped>
-.alert {
+.attackAlert {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 40px;
   padding: 10px;
   position: fixed;
-  top: 20px;
-  right: 50px;
+  top: 100px;
+  right: 39%;
   z-index: 1000;
 }
 .catchPokemon {
@@ -46,8 +46,19 @@ export default {
   height: 40px;
   padding: 10px;
   position: fixed;
-  top: 30px;
-  right: 30px;
+  top: 130px;
+  right: 90px;
+  z-index: 1000;
+}
+.alert {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  padding: 10px;
+  position: fixed;
+  top: 40px;
+  right: 40px;
   z-index: 1000;
 }
 </style>

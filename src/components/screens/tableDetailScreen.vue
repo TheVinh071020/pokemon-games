@@ -1,13 +1,19 @@
 <template>
   <v-app>
-    <v-container
-      ><custom-alert
-        :alert-message="alertMessage"
-        :type="'success'"
-        :class="'catchPokemon'"
-        v-if="alertMessage"
-      />
+    <v-container>
       <div class="main-cart">
+        <custom-alert
+          :alert-message="alertMessage"
+          :type="'success'"
+          :class="'attackAlert'"
+          v-if="alertMessage === 'Congratulations on your Pokemon winning!'"
+        /> 
+        <custom-alert
+          :alert-message="alertMessage"
+          :type="'error'"
+          :class="'attackAlert'"
+          v-if="alertMessage === 'Rất tiếc Pokemon của bạn đã bị đánh bại !'"
+        />
         <div class="cart-page">
           <div class="main">
             <div class="content">
@@ -45,7 +51,7 @@
                     <custom-button
                       class="btn-release"
                       :color="'success'"
-                      :value="'Tấn công'"
+                      :value="'Attack'"
                       :type="'button'"
                       @custom-click="clickAttack(pokemon.id)"
                     />
@@ -60,7 +66,7 @@
       <v-dialog v-model="popupVisible" max-width="800px" persistent>
         <v-card>
           <v-card-title>
-            <span class="headline">Chọn Pokemon của bạn để chiến đấu</span>
+            <span class="headline">Choose your Pokemon to battle</span>
           </v-card-title>
           <v-card-text>
             <template>
@@ -92,7 +98,7 @@
                       <td>
                         <custom-button
                           :color="'success'"
-                          :value="'Chọn'"
+                          :value="'Choose'"
                           :type="'button'"
                           @custom-click="ChoosingPokemon(item.cartId)"
                         />
@@ -104,7 +110,7 @@
             </template>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" text @click="closePopup">Hủy</v-btn>
+            <v-btn color="primary" text @click="closePopup">Cancel</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -115,7 +121,8 @@
 <script>
 import CustomButton from "../comons/customButton.vue";
 import CustomAlert from "../comons/customAlert.vue";
-import { ConfigApiMock } from "../api/configApiMock";
+import { ConfigApiMock } from "../../api/configApiMock.js";
+import { DOI_DAU } from "../../constants/index.js";
 
 export default {
   name: "GridDetailScreen",
@@ -153,7 +160,7 @@ export default {
       this.selectedPokemonId = pokemonId;
       const currentUser = JSON.parse(localStorage.getItem("currentUser"));
       if (!currentUser) {
-        this.$store.dispatch("showAlert", "Hãy đăng nhập để chơi game nhé !");
+        this.$store.dispatch("showAlert", "Please log in to play the game !");
       }
       await ConfigApiMock.get(`/cart?userId=${currentUser.id}`)
         .then((res) => {
@@ -166,145 +173,61 @@ export default {
     },
 
     // Thao tác chọn pokemon để chiến
-    // Thao tác chọn pokemon để chiến
-    // ChoosingPokemon(id) {
-    //   ////////////////////////
-    //   // Người tấn công
-    //   const attacker = this.myBag.find((pokemon) => pokemon.cartId === id);
-
-    //   // Tộc hệ
-    //   const typesAttacker = attacker.types.map((type) => type.type.name);
-    //   const attackerTypes = typesAttacker[0];
-
-    //   // Chỉ số tấn công
-    //   let attackerAttackStat = attacker.stats.find(
-    //     (stat) => stat.name === "attack"
-    //   ).base_stat;
-
-    //   // Lưu trữ giá trị ban đầu của attackerAttackStat
-    //   const initialAttackerAttackStat = attackerAttackStat;
-
-    //   // Chỉ số HP
-    //   const attackerHpStat = attacker.stats.find(
-    //     (stat) => stat.name === "hp"
-    //   ).base_stat;
-
-    //   // Chỉ số phòng thủ
-    //   const attackerDefenseStat = attacker.stats.find(
-    //     (stat) => stat.name === "defense"
-    //   ).base_stat;
-
-    //   // Tổng chỉ số phòng thủ của người tấn công
-    //   const attackerTotalDefense = attackerHpStat + attackerDefenseStat;
-
-    //   /////////////////////////
-    //   // Người phòng thủ
-    //   const defender = this.listPokemon.find(
-    //     (pokemon) => pokemon.id === this.selectedPokemonId
-    //   );
-
-    //   // Tộc hệ
-    //   const typesDefender = defender.types.map((types) => types.type);
-    //   const defenderTypes = typesDefender[0].name;
-
-    //   // Chỉ số tấn công
-    //   const defenderAttackStat = defender.stats.find(
-    //     (stat) => stat.stat.name === "attack"
-    //   ).base_stat;
-
-    //   const initialDefenderDefenseStat = defenderAttackStat;
-
-    //   // Chỉ số HP
-    //   const defenderHpStat = defender.stats.find(
-    //     (stat) => stat.stat.name === "hp"
-    //   ).base_stat;
-
-    //   // Chỉ số phòng thủ
-    //   const defenderDefenseStat = defender.stats.find(
-    //     (stat) => stat.stat.name === "defense"
-    //   ).base_stat;
-
-    //   // Tổng chỉ số phòng thủ của người phòng thủ
-    //   const defenderTotalDefense = defenderHpStat + defenderDefenseStat;
-
-    //   ///////////////////////////
-    //   if (attackerTypes === "normal") {
-    //     if (
-    //       defenderTypes === "normal" ||
-    //       defenderTypes === "fire" ||
-    //       defenderTypes === "water" ||
-    //       defenderTypes === "grass" ||
-    //       defenderTypes === "electric" ||
-    //       defenderTypes === "ice" ||
-    //       defenderTypes === "fighting" ||
-    //       defenderTypes === "poison" ||
-    //       defenderTypes === "ground" ||
-    //       defenderTypes === "flying" ||
-    //       defenderTypes === "psychique" ||
-    //       defenderTypes === "bug" ||
-    //       defenderTypes === "dragon" ||
-    //       defenderTypes === "dark" ||
-    //       defenderTypes === "fairy"
-    //     ) {
-    //       // Gán lại giá trị ban đầu cho attackerAttackStat
-    //       attackerAttackStat = initialAttackerAttackStat;
-    //       // defenderAttackStat = initialDefenderDefenseStat;
-    //     } else if (defenderTypes === "rock" || defenderTypes === "steel") {
-    //       attackerAttackStat = attackerAttackStat * 0.5;
-    //     }
-    //   }
-    // },
-    // Thao tác chọn pokemon để chiến
     ChoosingPokemon(id) {
-      // Lấy thông tin của attacker và defender
+      ////////////////////////
+      // Người tấn công
       const attacker = this.myBag.find((pokemon) => pokemon.cartId === id);
-      const defender = this.listPokemon.find(
-        (pokemon) => pokemon.id === this.selectedPokemonId
-      );
-
-      // Tính toán sức mạnh tấn công và phòng thủ của cả hai Pokémon
-      const attackerAttackStat = attacker.stats.find(
+      // Tộc hệ
+      const attackType = attacker.types[0].type.name;
+      // Chỉ số tấn công
+      let attackerAttackStat = attacker.stats.find(
         (stat) => stat.name === "attack"
       ).base_stat;
+      // Chỉ số HP
       const attackerHpStat = attacker.stats.find(
         (stat) => stat.name === "hp"
       ).base_stat;
+      // Chỉ số phòng thủ
       const attackerDefenseStat = attacker.stats.find(
         (stat) => stat.name === "defense"
       ).base_stat;
-      const attackerTotalDefense = attackerHpStat + attackerDefenseStat;
 
+      /////////////////////////
+      // Người phòng thủ
+      const defender = this.listPokemon.find(
+        (pokemon) => pokemon.id === this.selectedPokemonId
+      );
+      // Tộc hệ
+      const defenderType = defender.types[0].type.name;
+      // Chỉ số tấn công
       const defenderAttackStat = defender.stats.find(
         (stat) => stat.stat.name === "attack"
       ).base_stat;
+      // Chỉ số HP
       const defenderHpStat = defender.stats.find(
         (stat) => stat.stat.name === "hp"
       ).base_stat;
+      // Chỉ số phòng thủ
       const defenderDefenseStat = defender.stats.find(
         (stat) => stat.stat.name === "defense"
       ).base_stat;
-      const defenderTotalDefense = defenderHpStat + defenderDefenseStat;
 
-      console.log("defenderTotalDefense");
-      // Giảm chỉ số HP của Pokémon phòng thủ
-      if (defenderTotalDefense > 0) {
-        console.log("hp");
-        let damage = attackerAttackStat - defenderDefenseStat;
-        if (damage < 0) {
-          damage = 0;
-        } 
-        this.updateDefenderHp(damage); 
-      }
-
-      // Kiểm tra điều kiện chiến thắng
-      if (defenderHpStat === 0) {
-        alert("Pokemon đối phương đã hết máu. Bạn thắng!");
-      } else if (attackerHpStat === 0) {
-        alert("Pokemon của bạn đã hết máu. Bạn thua!");
+      const heSoDamage = DOI_DAU[attackType][defenderType];
+      const finalDamage = attackerAttackStat * heSoDamage;
+      const result = finalDamage - (defenderHpStat + defenderDefenseStat);
+      if (result >= 0) {
+        this.$store.dispatch(
+          "showAlert",
+          "Congratulations on your Pokemon winning!"
+        ); 
       } else {
-        alert("Hai Pokémon đều còn máu.");
+        this.$store.dispatch(
+          "showAlert",
+          "Sorry your Pokemon has been losing !"
+        );
       }
     },
+
     updateDefenderHp(damage) {
       this.defenderHpStat -= damage;
     },

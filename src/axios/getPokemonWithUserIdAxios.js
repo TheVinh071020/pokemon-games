@@ -1,5 +1,6 @@
 import { ConfigApiPokemon } from "../api/configApiPokemon";
 import { ConfigApiMock } from "../api/configApiMock";
+import store from "../store/store";
 
 export const getPokemonWithUserIdAxios = async (
   pokemonId,
@@ -35,7 +36,7 @@ export const getPokemonWithUserIdAxios = async (
       createAt: new Date().toLocaleString(),
       status: 0,
     };
-
+    store.commit("addToCart", cart);
     const result = await ConfigApiMock.post("/cart", cart);
     return result.data;
   } catch (error) {

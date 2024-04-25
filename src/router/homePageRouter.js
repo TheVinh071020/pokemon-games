@@ -1,4 +1,4 @@
-import HomePage from "../pages/homePage";
+import HomePage from "../views/homePage";
 
 export const homePageRouter = [
   {

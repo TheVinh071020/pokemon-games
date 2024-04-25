@@ -58,7 +58,7 @@ export default {
 }
 
 .bar {
-  background-color: #3498db;
+  background-color: #00d7fd;
   margin-right: 10px;
   transition: width 0.5s;
   border-radius: 5px;
@@ -67,5 +67,6 @@ export default {
 .bar p {
   text-align: center;
   margin-top: 5px;
+  padding-top:5px
 }
 </style>

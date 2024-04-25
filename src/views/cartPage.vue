@@ -84,8 +84,8 @@ import CustomButton from "../components/comons/customButton.vue";
 import CustomAlert from "../components/comons/customAlert.vue";
 import CustomPagination from "../components/comons/customPagination.vue";
 
-import { getMyBagPokemonAxios } from "../components/axios/getMyBagPokemonAxios";
-import { ConfigApiMock } from "../components/api/configApiMock";
+import { getMyBagPokemonAxios } from "../axios/getMyBagPokemonAxios";
+import { ConfigApiMock } from "../api/configApiMock";
 import { mapMutations } from "vuex";
 
 export default {
@@ -104,7 +104,10 @@ export default {
     };
   },
   created() {
-    this.getMyBag();
+    setTimeout(async () => {
+      this.getMyBag();
+      this.isloading = false;
+    }, 500);
   },
   computed: {
     alertMessage() {
@@ -115,18 +118,8 @@ export default {
     async getMyBag() {
       try {
         const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-        const myBag = getMyBagPokemonAxios(currentUser);
-        // Hàm chờ 1s thì render myBag
-        const timeoutPromise = new Promise((resolve, reject) => {
-          setTimeout(() => {
-            reject(new Error("Timeout"));
-          }, 1000);
-        });
-        const cart = await Promise.race([myBag, timeoutPromise]);
-        this.isloading = false;
-        if (cart) {
-          this.cart = cart;
-        }
+        const myBag = await getMyBagPokemonAxios(currentUser);
+        this.cart = myBag;
       } catch (error) {
         console.error("Error fetching cart items:", error);
       }
@@ -136,7 +129,7 @@ export default {
     async removeItem(cartId) {
       try {
         await ConfigApiMock.delete(`/cart/${cartId}`);
-        this.$store.dispatch("showAlert", "Bạn đã thả Pokemon !");
+        this.$store.dispatch("showAlert", "You have released a Pokemon !");
         this.cart = this.cart.filter((item) => item.cartId !== cartId);
       } catch (error) {
         console.error("Error removing item:", error);

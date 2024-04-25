@@ -85,7 +85,7 @@ import CustomInput from "../comons/customInput.vue";
 import CustomButton from "../comons/customButton.vue";
 import CustomAlert from "../comons/customAlert.vue";
 
-import { ConfigApiMock } from "../api/configApiMock";
+import { ConfigApiMock } from "../../api/configApiMock";
 
 export default {
   components: {
@@ -115,17 +115,17 @@ export default {
     handleSubmit() {
       this.errors = {};
       if (!this.username) {
-        this.errors.usernameError = "Vui lòng nhập tên người dùng";
+        this.errors.usernameError = "Please enter your username";
       }
       if (!this.password) {
-        this.errors.passwordError = "Vui lòng nhập mật khẩu";
+        this.errors.passwordError = "Please enter your password";
       }
       if (!this.confirmPassword) {
-        this.errors.confirmPasswordError = "Vui lòng nhập xác nhận mật khẩu";
+        this.errors.confirmPasswordError = "Please enter your confirm password";
       }
       if (this.password !== this.confirmPassword) {
         this.errors.confirmPasswordError =
-          "Mật khẩu và xác nhận mật khẩu không khớp";
+          "Password and confirm password do not match";
       }
       if (Object.keys(this.errors).length === 0) {
         ConfigApiMock.get("/user")
@@ -137,7 +137,7 @@ export default {
             if (existingUser) {
               this.$store.dispatch(
                 "showAlert",
-                "Tên người dùng đã tồn tại. Vui lòng chọn một tên người dùng khác."
+                "Username already exists. Please choose another username."
               );
             } else {
               ConfigApiMock.post("/user", {
@@ -148,7 +148,7 @@ export default {
                   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrDAY_lyALmc62tPopzRzF9hNBFzbyqxzYB6nXC2IZ5w&s",
               })
                 .then((res) => {
-                  this.$store.dispatch("showAlert", "Đăng ký thành công !");
+                  this.$store.dispatch("showAlert", "Sign up successfully !");
                   this.$router.push({ name: "Login" });
                 })
                 .catch((error) => {

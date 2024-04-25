@@ -4,13 +4,19 @@
       :alert-message="alertMessage"
       :type="'success'"
       :class="'alert'"
-      v-if="alertMessage === 'Đăng nhập thành công !'"
+      v-if="alertMessage === 'Logged in successfully !'"
     />
     <custom-alert
       :alert-message="alertMessage"
       :type="'error'"
       :class="'alert'"
-      v-if="alertMessage === 'Tên người dùng hoặc mật khẩu không đúng !'"
+      v-if="alertMessage === 'Username or password is incorrect !'"
+    />
+    <custom-alert
+      :alert-message="alertMessage"
+      :type="'success'"
+      :class="'alert'"
+      v-if="alertMessage === 'Sign up successfully !'"
     />
     <div class="register-page">
       <div class="page-left">
@@ -71,7 +77,7 @@
 </template>
 
 <script>
-import { ConfigApiMock } from "../api/configApiMock";
+import { ConfigApiMock } from "../../api/configApiMock";
 import CustomInput from "../comons/customInput.vue";
 import CustomButton from "../comons/customButton.vue";
 import CustomAlert from "../comons/customAlert.vue";
@@ -105,10 +111,10 @@ export default {
     handleSubmit() {
       this.errors = {};
       if (!this.username) {
-        this.errors.usernameError = "Vui lòng nhập tên người dùng";
+        this.errors.usernameError = "Please enter your username";
       }
       if (!this.password) {
-        this.errors.passwordError = "Vui lòng nhập mật khẩu";
+        this.errors.passwordError = "Please enter your password";
       }
       if (Object.keys(this.errors).length === 0) {
         ConfigApiMock.get("/user")
@@ -121,13 +127,13 @@ export default {
               );
             });
             if (userData) {
-              this.$store.dispatch("showAlert", "Đăng nhập thành công !");
+              this.$store.dispatch("showAlert", "Logged in successfully !");
               localStorage.setItem("currentUser", JSON.stringify(userData));
               this.$router.push({ name: "HomePage" });
             } else {
               this.$store.dispatch(
                 "showAlert",
-                "Tên người dùng hoặc mật khẩu không đúng !"
+                "Username or password is incorrect !"
               );
             }
           })

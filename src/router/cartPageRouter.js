@@ -1,4 +1,4 @@
-import CartPage from "../pages/cartPage.vue";
+import CartPage from "../views/cartPage.vue";
 
 export const cartPageRouter = [
   {
