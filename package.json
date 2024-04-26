@@ -10,6 +10,7 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "@mdi/font": "^7.4.47",
     "antd": "^5.16.2",
     "axios": "^0.19.0",
     "chart.js": "^4.4.2",

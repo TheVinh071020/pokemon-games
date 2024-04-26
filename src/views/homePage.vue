@@ -43,13 +43,14 @@
 </template>
 
 <script>
-import CompHeader from "../components/layouts/compHeader.vue";
-import CustomPagination from "../components/comons/customPagination.vue";
+import CompHeader from "../layouts/compHeader.vue";
+import CustomPagination from "../components/common/customPagination.vue";
 import GridDetailScreen from "../components/screens/gridDetailScreen.vue";
 import TableDetailScreen from "../components/screens/tableDetailScreen.vue";
-import CustomAlert from "../components/comons/customAlert.vue";
-import CustomButton from "../components/comons/customButton.vue";
+import CustomAlert from "../components/common/customAlert.vue";
+import CustomButton from "../components/common/customButton.vue";
 import { getListPokemonAxios } from "../axios/getListPokemonAxios";
+import CustomLoading from "../components/common/customLoading.vue";
 
 export default {
   name: "HomePage",
@@ -60,6 +61,7 @@ export default {
     TableDetailScreen,
     CustomAlert,
     CustomButton,
+    CustomLoading,
   },
   data() {
     return {
@@ -70,6 +72,7 @@ export default {
       totalPages: 0,
       changeTab: 0,
       isloading: true,
+      obj: {age : 10}
     };
   },
   created() {
@@ -130,11 +133,11 @@ export default {
   margin-top: 50px;
   width: 100%;
 }
-
 .icon-loading {
   position: absolute;
-  left: 49%;
-  bottom: 16%;
+  left: 50%;
+  bottom: 55%;
+  position: fixed;
 }
 .tab-container {
   position: absolute;

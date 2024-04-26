@@ -79,10 +79,10 @@
 </template>
 
 <script>
-import CompHeader from "../components/layouts/compHeader.vue";
-import CustomButton from "../components/comons/customButton.vue";
-import CustomAlert from "../components/comons/customAlert.vue";
-import CustomPagination from "../components/comons/customPagination.vue";
+import CompHeader from "../layouts/compHeader.vue";
+import CustomButton from "../components/common/customButton.vue";
+import CustomAlert from "../components/common/customAlert.vue";
+import CustomPagination from "../components/common/customPagination.vue";
 
 import { getMyBagPokemonAxios } from "../axios/getMyBagPokemonAxios";
 import { ConfigApiMock } from "../api/configApiMock";
@@ -127,13 +127,17 @@ export default {
 
     ...mapMutations(["removeFromCart"]),
     async removeItem(cartId) {
-      try {
-        await ConfigApiMock.delete(`/cart/${cartId}`);
-        this.$store.dispatch("showAlert", "You have released a Pokemon !");
-        this.cart = this.cart.filter((item) => item.cartId !== cartId);
-      } catch (error) {
-        console.error("Error removing item:", error);
-      }
+      this.isloading = true;
+      setTimeout(async () => {
+        try {
+          await ConfigApiMock.delete(`/cart/${cartId}`);
+          this.$store.dispatch("showAlert", "You have released a Pokemon !");
+          this.cart = this.cart.filter((item) => item.cartId !== cartId);
+          this.isloading = false;
+        } catch (error) {
+          console.error("Error removing item:", error);
+        }
+      }, 500);
     },
   },
 };
@@ -142,8 +146,9 @@ export default {
 <style>
 .icon-loading {
   position: absolute;
-  left: 49%;
-  top: 2.5%;
+  left: 50%;
+  bottom: 55%;
+  position: fixed;
 }
 .content .cart-item {
   align-items: center;

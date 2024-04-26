@@ -12,7 +12,7 @@
           :alert-message="alertMessage"
           :type="'error'"
           :class="'attackAlert'"
-          v-if="alertMessage === 'Rất tiếc Pokemon của bạn đã bị đánh bại !'"
+          v-if="alertMessage === 'Sorry your Pokemon has been losing !'"
         />
         <div class="cart-page">
           <div class="main">
@@ -119,12 +119,10 @@
 </template>
 
 <script>
-import CustomButton from "../comons/customButton.vue";
-import CustomAlert from "../comons/customAlert.vue";
+import CustomButton from "../common/customButton.vue";
+import CustomAlert from "../common/customAlert.vue";
 import { ConfigApiMock } from "../../api/configApiMock.js";
 import { DOI_DAU } from "../../constants/index.js";
-
-import { DOI_DAU } from "../comons/js/constant.js";
 
 export default {
   name: "GridDetailScreen",
@@ -215,30 +213,23 @@ export default {
       ).base_stat;
 
       const heSoDamage = DOI_DAU[attackType][defenderType];
+      console.log("heSoDamage ", heSoDamage);
       const finalDamage = attackerAttackStat * heSoDamage;
+      console.log("finalDamage ", finalDamage);
       const result = finalDamage - (defenderHpStat + defenderDefenseStat);
+      console.log("result ", result);
       if (result >= 0) {
         this.$store.dispatch(
           "showAlert",
           "Congratulations on your Pokemon winning!"
         );
+        this.popupVisible = false;
       } else {
         this.$store.dispatch(
           "showAlert",
           "Sorry your Pokemon has been losing !"
         );
-
-        const heSoDamage = DOI_DAU[attackType][defenderType];
-        console.log("heSoDamage ", heSoDamage);
-        const finalDamage = attackerAttackStat * heSoDamage;
-        console.log("finalDamage ", finalDamage);
-        const result = finalDamage - (defenderHpStat + defenderDefenseStat);
-        console.log("result ", result);
-        if (result >= 0) {
-          console.log("win");
-        } else {
-          console.log("lose");
-        }
+        this.popupVisible = false;
       }
     },
 

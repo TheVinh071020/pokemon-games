@@ -78,9 +78,9 @@
 
 <script>
 import { ConfigApiMock } from "../../api/configApiMock";
-import CustomInput from "../comons/customInput.vue";
-import CustomButton from "../comons/customButton.vue";
-import CustomAlert from "../comons/customAlert.vue";
+import CustomInput from "../common/customInput.vue";
+import CustomButton from "../common/customButton.vue";
+import CustomAlert from "../common/customAlert.vue";
 
 export default {
   components: {

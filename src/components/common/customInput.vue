@@ -18,7 +18,7 @@ export default {
 .custom-input {
   border: 1px ridge #dbdbdb;
   border-radius: 10px;
-  width: 180%;
+  width: 210%;
   height: 40px;
   padding-left: 10%;
 }

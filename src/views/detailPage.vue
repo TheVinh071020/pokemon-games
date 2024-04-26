@@ -24,7 +24,7 @@
         <div class="detail-pages">
           <v-container>
             <div class="container">
-              <div class="icon-loading1" v-if="isloading">
+              <div class="icon-loading" v-if="isloading">
                 <i class="fa-solid fa-spinner fa-spin-pulse fa-2xl"></i>
               </div>
               <div class="label">
@@ -59,7 +59,7 @@
       <!-- dialog -->
       <v-dialog v-model="popupVisible" max-width="500px" persistent>
         <v-card>
-          <v-card-title>
+          <v-card-title class="head-dialog">
             <span class="headline">Change the name to put in your bag</span>
           </v-card-title>
           <v-card-text>
@@ -98,14 +98,14 @@
 </template>
 
 <script>
-import CompHeader from "../components/layouts/compHeader.vue";
-import CustomChart from "../components/comons/customChart.vue";
+import CompHeader from "../layouts/compHeader.vue";
+import CustomChart from "../components/common/customChart.vue";
 import InforDetailScreenVue from "../components/screens/inforDetailScreen.vue";
-import CustomButton from "../components/comons/customButton.vue";
-import CustomDialogVue from "../components/comons/customDialog.vue";
+import CustomButton from "../components/common/customButton.vue";
+import CustomDialogVue from "../components/common/customDialog.vue";
 
-import CustomAlert from "../components/comons/customAlert.vue";
-import CustomInput from "../components/comons/customInput.vue";
+import CustomAlert from "../components/common/customAlert.vue";
+import CustomInput from "../components/common/customInput.vue";
 
 import { getPokemonWithUserIdAxios } from "../axios/getPokemonWithUserIdAxios";
 import { getDetailPokemonAxios } from "../axios/getDetailPokemonAxios";
@@ -201,6 +201,7 @@ export default {
             );
             this.$store.dispatch("showAlert", "Successfully caught Pokemon !");
             this.popupVisible = false;
+            this.isloading = false;
           } catch (error) {
             console.log(error);
           }
@@ -218,13 +219,13 @@ export default {
 
 <style scoped>
 .icon-loading {
-  margin-bottom: 10px;
-  margin-left: 10px;
-}
-.icon-loading1 {
   position: absolute;
-  left: 49%;
-  top: 45%;
+  left: 50%;
+  bottom: 55%;
+  position: fixed;
+}
+.head-dialog {
+  justify-content: center;
 }
 .detail {
   width: 100%;

@@ -4,6 +4,7 @@ import router from "./router";
 
 import Vuetify from "vuetify";
 import "vuetify/dist/vuetify.css";
+import '@mdi/font/css/materialdesignicons.css'
 
 import store from "./store/store"
  
